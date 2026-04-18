@@ -1,0 +1,122 @@
+{
+  "settings": {
+    "title": "Notes API",
+    "description": "A minimal two-table example to get started with Tabula.",
+    "version": "1.0.0",
+    "baseUrl": "/api"
+  },
+  "defaultErrors": [
+    {
+      "code": 401,
+      "response": { "code": 401, "message": "Unauthorized" },
+      "appliesTo": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "code": 404,
+      "response": { "code": 404, "message": "Resource not found" },
+      "appliesTo": ["GET-single", "PUT", "DELETE"]
+    },
+    {
+      "code": 500,
+      "response": { "code": 500, "message": "Internal server error" },
+      "appliesTo": ["GET-list", "GET-single", "POST", "PUT", "DELETE"]
+    }
+  ],
+  "tables": [
+    {
+      "name": { "singular": "user", "plural": "users" },
+      "description": "Registered users of the application.",
+      "uri": "/users",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "name": "string",
+        "email": "string",
+        "createdAt": "datetime"
+      },
+      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"],
+      "endpoints": {
+        "GET-list": { "description": "Returns the list of all users." },
+        "GET-single": { "description": "Returns a single user by ID." },
+        "POST": {
+          "description": "Creates a new user.",
+          "body": {
+            "schema": { "name": "string", "email": "string" },
+            "defaultValue": "{\n\t\"name\": \"Alice\",\n\t\"email\": \"alice@example.com\"\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": { "id": "integer", "name": "string", "email": "string" }
+            }
+          ]
+        },
+        "PUT": {
+          "description": "Updates an existing user.",
+          "body": {
+            "schema": { "name": "string", "email": "string" }
+          },
+          "responses": [
+            {
+              "code": 200,
+              "response": { "id": "integer", "name": "string", "email": "string" }
+            }
+          ]
+        },
+        "DELETE": { "description": "Deletes a user permanently." }
+      }
+    },
+    {
+      "name": { "singular": "note", "plural": "notes" },
+      "description": "Short text notes belonging to a user.",
+      "uri": "/notes",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "title": "string",
+        "content": "string?",
+        "author": "foreignKey-user",
+        "createdAt": "datetime"
+      },
+      "listParameters": [
+        { "name": "page", "label": "Page", "type": "integer", "defaultValue": 1, "min": 1 },
+        { "name": "limit", "label": "Limit", "type": "integer", "defaultValue": 20, "min": 1, "max": 100 }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"],
+      "endpoints": {
+        "GET-list": { "description": "Returns a paginated list of notes." },
+        "GET-single": { "description": "Returns a single note by ID." },
+        "POST": {
+          "description": "Creates a new note.",
+          "body": {
+            "schema": { "title": "string", "content": "string?", "authorId": "integer" },
+            "defaultValue": "{\n\t\"title\": \"My first note\",\n\t\"content\": \"Hello, world!\",\n\t\"authorId\": 1\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": { "id": "integer", "title": "string", "content": "string?" }
+            }
+          ]
+        },
+        "PUT": {
+          "description": "Updates an existing note.",
+          "body": {
+            "schema": { "title": "string", "content": "string?" }
+          },
+          "responses": [
+            {
+              "code": 200,
+              "response": { "id": "integer", "title": "string", "content": "string?" }
+            }
+          ]
+        },
+        "DELETE": { "description": "Deletes a note permanently." }
+      }
+    }
+  ]
+}

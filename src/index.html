@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>API Doc</title>
+		<link rel="stylesheet" href="styles.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/pretty-print-json@3/dist/css/pretty-print-json.css"
+		/>
+	</head>
+	<body>
+		<header class="header">
+			<div class="header__inner">
+				<img class="header__logo" src="" alt="" hidden />
+				<div class="header__text">
+					<h1 class="header__title">API Doc</h1>
+					<p class="header__description" hidden></p>
+				</div>
+				<span class="header__version" hidden></span>
+				<nav class="header__links" hidden></nav>
+			</div>
+		</header>
+
+		<main id="main">
+			<aside class="sidebar">
+				<div id="auth"></div>
+				<div class="sidebar__actions">
+					<button id="expand-all" type="button">Expand all</button>
+					<button id="collapse-all" type="button">Collapse all</button>
+				</div>
+			</aside>
+
+			<section id="endpoints"></section>
+		</main>
+
+		<script src="https://cdn.jsdelivr.net/npm/pretty-print-json@3/dist/pretty-print-json.min.js"></script>
+		<script src="constants.js"></script>
+		<script src="endpoints.js"></script>
+		<script src="inputs.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>

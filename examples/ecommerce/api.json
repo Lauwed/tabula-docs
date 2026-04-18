@@ -1,0 +1,407 @@
+{
+  "settings": {
+    "title": "Shop API",
+    "description": "E-commerce API — products, orders, customers, and media uploads.",
+    "version": "2.0.0",
+    "baseUrl": "/api/v2",
+    "links": [
+      { "label": "Docs", "url": "https://github.com/Lauwed/tabula-docs" },
+      { "label": "Status", "url": "https://status.example.com" }
+    ]
+  },
+  "defaultErrors": [
+    {
+      "code": 400,
+      "response": { "code": 400, "message": "Invalid or missing fields" },
+      "appliesTo": ["POST", "PUT"]
+    },
+    {
+      "code": 401,
+      "response": { "code": 401, "message": "Unauthorized — valid token required" },
+      "appliesTo": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "code": 403,
+      "response": { "code": 403, "message": "Forbidden — insufficient permissions" },
+      "appliesTo": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "code": 404,
+      "response": { "code": 404, "message": "Resource not found" },
+      "appliesTo": ["GET-single", "PUT", "DELETE"]
+    },
+    {
+      "code": 409,
+      "response": { "code": 409, "message": "Conflict — resource already exists" },
+      "appliesTo": ["POST"]
+    },
+    {
+      "code": 500,
+      "response": { "code": 500, "message": "Internal server error" },
+      "appliesTo": ["GET-list", "GET-single", "POST", "PUT", "DELETE"]
+    }
+  ],
+  "tables": [
+    {
+      "name": { "singular": "customer", "plural": "customers" },
+      "description": "Registered customers of the shop.",
+      "uri": "/customers",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "email": "string",
+        "firstName": "string",
+        "lastName": "string",
+        "phone": "string?",
+        "createdAt": "datetime"
+      },
+      "listParameters": [
+        { "name": "page", "label": "Page", "type": "integer", "defaultValue": 1, "min": 1 },
+        { "name": "limit", "label": "Limit", "type": "integer", "defaultValue": 20, "min": 1, "max": 100 },
+        {
+          "name": "sort",
+          "label": "Sort by",
+          "type": "select",
+          "options": [
+            { "name": "createdAt_desc", "label": "Newest first" },
+            { "name": "createdAt_asc", "label": "Oldest first" },
+            { "name": "lastName_asc", "label": "Name A–Z" }
+          ]
+        }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"],
+      "endpoints": {
+        "GET-list": { "description": "Returns a paginated, sortable list of customers." },
+        "GET-single": { "description": "Returns a single customer by ID." },
+        "POST": {
+          "description": "Creates a new customer account.",
+          "body": {
+            "schema": {
+              "email": "string",
+              "firstName": "string",
+              "lastName": "string",
+              "phone": "string?"
+            },
+            "defaultValue": "{\n\t\"email\": \"jane@example.com\",\n\t\"firstName\": \"Jane\",\n\t\"lastName\": \"Doe\"\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": { "id": "integer", "email": "string", "firstName": "string", "lastName": "string" }
+            }
+          ]
+        },
+        "PUT": {
+          "description": "Updates a customer's profile.",
+          "body": {
+            "schema": { "firstName": "string", "lastName": "string", "phone": "string?" }
+          },
+          "responses": [
+            {
+              "code": 200,
+              "response": { "id": "integer", "email": "string", "firstName": "string", "lastName": "string" }
+            }
+          ]
+        },
+        "DELETE": { "description": "Permanently deletes a customer and all associated data." }
+      }
+    },
+    {
+      "name": { "singular": "product", "plural": "products" },
+      "description": "Items available for purchase in the shop.",
+      "uri": "/products",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "sku": "string",
+        "name": "string",
+        "description": "string?",
+        "price": "double?",
+        "stock": "integer",
+        "status": "ACTIVE | ARCHIVED | DRAFT",
+        "image": "foreignKey-media"
+      },
+      "response": {
+        "get-list": {
+          "data": "array-product",
+          "total": "integer",
+          "page": "integer",
+          "pageSize": "integer"
+        }
+      },
+      "listParameters": [
+        { "name": "page", "label": "Page", "type": "integer", "defaultValue": 1, "min": 1 },
+        { "name": "limit", "label": "Limit", "type": "integer", "defaultValue": 20, "min": 1, "max": 100 },
+        {
+          "name": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            { "name": "ACTIVE", "label": "Active" },
+            { "name": "ARCHIVED", "label": "Archived" },
+            { "name": "DRAFT", "label": "Draft" }
+          ]
+        }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"],
+      "endpoints": {
+        "GET-list": { "description": "Returns a paginated, filterable list of products." },
+        "GET-single": { "description": "Returns a single product by ID." },
+        "POST": {
+          "description": "Creates a new product.",
+          "body": {
+            "schema": {
+              "sku": "string",
+              "name": "string",
+              "description": "string?",
+              "price": "double?",
+              "stock": "integer"
+            },
+            "defaultValue": "{\n\t\"sku\": \"SHOE-001\",\n\t\"name\": \"Running Shoe\",\n\t\"price\": 89.99,\n\t\"stock\": 50\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": { "id": "integer", "sku": "string", "name": "string", "status": "DRAFT" }
+            }
+          ]
+        },
+        "PUT": {
+          "description": "Updates product details. Changing `sku` is not allowed once the product has orders.",
+          "body": {
+            "schema": {
+              "name": "string",
+              "description": "string?",
+              "price": "double?",
+              "stock": "integer",
+              "status": "ACTIVE | ARCHIVED | DRAFT"
+            }
+          },
+          "responses": [
+            {
+              "code": 200,
+              "response": { "id": "integer", "sku": "string", "name": "string", "status": "ACTIVE | ARCHIVED | DRAFT" }
+            }
+          ]
+        },
+        "DELETE": { "description": "Permanently deletes a product. Blocked if the product has pending orders." }
+      },
+      "customEndpoints": [
+        {
+          "name": "upload-image",
+          "description": "Uploads and attaches a product image. The file is automatically converted to WebP and resized to 1200×1200 px.",
+          "uri": "/{ID}/image",
+          "method": "POST",
+          "responses": [
+            { "code": 200, "response": { "id": "integer", "imageUrl": "string" } },
+            { "code": 413, "response": { "code": 413, "message": "File too large — maximum size is 5 MB" } },
+            { "code": 415, "response": { "code": 415, "message": "Unsupported media type — use JPEG or PNG" } },
+            401,
+            403,
+            404,
+            500
+          ],
+          "body": {
+            "multipart": true,
+            "fields": [
+              {
+                "name": "file",
+                "label": "Product image (JPEG or PNG — max 5 MB)",
+                "type": "file",
+                "required": true,
+                "accept": ["image/jpeg", "image/png"],
+                "maxWeight": 5
+              },
+              {
+                "name": "alt",
+                "label": "Alt text",
+                "type": "string",
+                "required": false
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": { "singular": "media", "plural": "media" },
+      "description": "Uploaded files and images managed by the platform.",
+      "uri": "/media",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "url": "string",
+        "alt": "string?",
+        "mimeType": "string",
+        "sizeBytes": "integer",
+        "createdAt": "datetime"
+      },
+      "includedEndpoints": ["GET-list", "GET-single", "DELETE"],
+      "endpoints": {
+        "GET-list": { "description": "Returns the list of all uploaded media assets." },
+        "GET-single": { "description": "Returns a single media asset by ID." },
+        "DELETE": { "description": "Deletes a media asset. The file is removed from storage immediately." }
+      },
+      "customEndpoints": [
+        {
+          "name": "upload",
+          "description": "Uploads a new media file. Accepted formats: JPEG, PNG, GIF, WebP, SVG, PDF.",
+          "uri": "/upload",
+          "method": "POST",
+          "responses": [
+            {
+              "code": 201,
+              "response": { "id": "integer", "url": "string", "mimeType": "string", "sizeBytes": "integer" }
+            },
+            { "code": 413, "response": { "code": 413, "message": "File too large — maximum size is 20 MB" } },
+            { "code": 415, "response": { "code": 415, "message": "Unsupported media type" } },
+            401,
+            500
+          ],
+          "body": {
+            "multipart": true,
+            "fields": [
+              {
+                "name": "file",
+                "label": "File (JPEG, PNG, GIF, WebP, SVG, PDF — max 20 MB)",
+                "type": "file",
+                "required": true,
+                "accept": ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml", "application/pdf"],
+                "maxWeight": 20
+              },
+              {
+                "name": "alt",
+                "label": "Alt text (images only)",
+                "type": "string",
+                "required": false
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": { "singular": "order", "plural": "orders" },
+      "description": "Customer purchase orders.",
+      "uri": "/orders",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "reference": "string",
+        "status": "PENDING | CONFIRMED | SHIPPED | DELIVERED | CANCELLED",
+        "customer": "foreignKey-customer",
+        "items": "array-order-item",
+        "totalAmount": "double?",
+        "createdAt": "datetime"
+      },
+      "response": {
+        "get-list": {
+          "data": "array-order",
+          "total": "integer",
+          "page": "integer",
+          "pageSize": "integer"
+        }
+      },
+      "listParameters": [
+        { "name": "page", "label": "Page", "type": "integer", "defaultValue": 1, "min": 1 },
+        { "name": "limit", "label": "Limit", "type": "integer", "defaultValue": 20, "min": 1, "max": 100 },
+        {
+          "name": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            { "name": "PENDING", "label": "Pending" },
+            { "name": "CONFIRMED", "label": "Confirmed" },
+            { "name": "SHIPPED", "label": "Shipped" },
+            { "name": "DELIVERED", "label": "Delivered" },
+            { "name": "CANCELLED", "label": "Cancelled" }
+          ]
+        }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single", "POST"],
+      "tokenRequired": { "post": true },
+      "endpoints": {
+        "GET-list": { "description": "Returns a paginated, filterable list of orders." },
+        "GET-single": { "description": "Returns the full details of a single order, including line items." },
+        "POST": {
+          "description": "Creates a new order. The `reference` is auto-generated server-side.",
+          "body": {
+            "schema": {
+              "customerId": "integer",
+              "items": [{ "productId": "integer", "quantity": "integer" }]
+            },
+            "defaultValue": "{\n\t\"customerId\": 1,\n\t\"items\": [\n\t\t{ \"productId\": 1, \"quantity\": 2 }\n\t]\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "id": "integer",
+                "reference": "string",
+                "status": "PENDING",
+                "totalAmount": "double?"
+              }
+            }
+          ]
+        }
+      },
+      "customEndpoints": [
+        {
+          "name": "confirm",
+          "description": "Confirms a pending order, triggering stock reservation.",
+          "uri": "/{ID}/confirm",
+          "method": "POST",
+          "responses": [
+            { "code": 200, "response": { "id": "integer", "status": "CONFIRMED" } },
+            { "code": 409, "response": { "code": 409, "message": "Order is not in PENDING status" } },
+            { "code": 422, "response": { "code": 422, "message": "Insufficient stock for one or more items" } },
+            401,
+            403,
+            404,
+            500
+          ]
+        },
+        {
+          "name": "ship",
+          "description": "Marks the order as shipped and records the tracking number.",
+          "uri": "/{ID}/ship",
+          "method": "POST",
+          "body": {
+            "schema": { "carrier": "string", "trackingNumber": "string" },
+            "defaultValue": "{\n\t\"carrier\": \"DHL\",\n\t\"trackingNumber\": \"1234567890\"\n}"
+          },
+          "responses": [
+            { "code": 200, "response": { "id": "integer", "status": "SHIPPED", "trackingNumber": "string" } },
+            { "code": 409, "response": { "code": 409, "message": "Order must be CONFIRMED before shipping" } },
+            401,
+            403,
+            404,
+            500
+          ]
+        },
+        {
+          "name": "cancel",
+          "description": "Cancels an order that has not yet been shipped. Stock is automatically restored.",
+          "uri": "/{ID}/cancel",
+          "method": "POST",
+          "responses": [
+            { "code": 200, "response": { "id": "integer", "status": "CANCELLED" } },
+            { "code": 409, "response": { "code": 409, "message": "Cannot cancel an order that has already been shipped" } },
+            401,
+            403,
+            404,
+            500
+          ]
+        }
+      ]
+    }
+  ]
+}
