@@ -1,0 +1,38 @@
+{
+  "name": "tabula-docs",
+  "version": "0.1.0",
+  "description": "Static, dependency-free API documentation driven by a single JSON file.",
+  "type": "module",
+  "bin": {
+    "tabula": "./bin/tabula.mjs"
+  },
+  "files": [
+    "src",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "api",
+    "documentation",
+    "static",
+    "rest",
+    "openapi-alternative",
+    "json-driven",
+    "docs",
+    "zero-dependency"
+  ],
+  "author": "Lauwed",
+  "license": "MIT",
+  "homepage": "https://github.com/Lauwed/tabula-docs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lauwed/tabula-docs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lauwed/tabula-docs/issues"
+  }
+}
