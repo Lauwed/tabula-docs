@@ -1,0 +1,13 @@
+{
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A table with a uriParameter missing defaultValue.",
+      "uri": "/items",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "isPrimary": true }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single"]
+    }
+  ]
+}

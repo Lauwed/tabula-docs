@@ -1,0 +1,17 @@
+{
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A table with a foreignKey to an unknown table.",
+      "uri": "/items",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "owner": "foreignKey-ghost"
+      },
+      "includedEndpoints": ["GET-list", "GET-single", "PUT", "DELETE"]
+    }
+  ]
+}

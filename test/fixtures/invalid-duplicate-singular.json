@@ -1,0 +1,22 @@
+{
+  "tables": [
+    {
+      "name": { "singular": "user", "plural": "users" },
+      "description": "First user table.",
+      "uri": "/users",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"]
+    },
+    {
+      "name": { "singular": "user", "plural": "users2" },
+      "description": "Duplicate user table.",
+      "uri": "/users2",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"]
+    }
+  ]
+}

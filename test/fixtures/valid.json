@@ -1,0 +1,17 @@
+{
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A simple item.",
+      "uri": "/items",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "name": "string"
+      },
+      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"]
+    }
+  ]
+}

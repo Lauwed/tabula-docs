@@ -1,0 +1,25 @@
+{
+  "defaultErrors": [
+    {
+      "code": 404,
+      "response": { "code": 404, "message": "Not found" },
+      "appliesTo": ["GET-single"]
+    },
+    {
+      "code": 404,
+      "response": { "code": 404, "message": "Not found again" },
+      "appliesTo": ["GET-single"]
+    }
+  ],
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A simple item.",
+      "uri": "/items",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single"]
+    }
+  ]
+}

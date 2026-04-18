@@ -1,0 +1,17 @@
+{
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A table with an invalid schema type.",
+      "uri": "/items",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "status": "notAValidType"
+      },
+      "includedEndpoints": ["GET-list", "GET-single"]
+    }
+  ]
+}

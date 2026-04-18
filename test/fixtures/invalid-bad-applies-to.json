@@ -1,0 +1,20 @@
+{
+  "defaultErrors": [
+    {
+      "code": 400,
+      "response": { "code": 400, "message": "Bad request" },
+      "appliesTo": ["PATCH"]
+    }
+  ],
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A simple item.",
+      "uri": "/items",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "includedEndpoints": ["GET-list", "GET-single"]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A table with a select listParameter missing options.",
+      "uri": "/items",
+      "includedEndpoints": ["GET-list"],
+      "listParameters": [
+        { "name": "status", "label": "Status", "type": "select" }
+      ]
+    }
+  ]
+}

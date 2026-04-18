@@ -1,0 +1,25 @@
+{
+  "defaultErrors": [
+    {
+      "code": 500,
+      "response": { "code": 500, "message": "Internal server error" },
+      "appliesTo": ["GET-list"]
+    }
+  ],
+  "tables": [
+    {
+      "name": { "singular": "item", "plural": "items" },
+      "description": "A table with a custom endpoint referencing unknown defaultError code.",
+      "uri": "/items",
+      "includedEndpoints": ["GET-list"],
+      "customEndpoints": [
+        {
+          "name": "search",
+          "uri": "/items/search",
+          "method": "GET",
+          "responses": [999]
+        }
+      ]
+    }
+  ]
+}
