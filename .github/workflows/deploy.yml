@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "src/**"
-      - "examples/blog/**"
+      - "examples/ecommerce/**"
   workflow_dispatch:
 
 permissions:
@@ -16,6 +16,9 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
