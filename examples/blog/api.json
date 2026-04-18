@@ -1,121 +1,1375 @@
 {
   "settings": {
-    "title": "Notes API",
-    "description": "A minimal two-table example to get started with Tabula.",
+    "title": "Date.now()",
+    "description": "API for the blog and CMS of Date.now()",
     "version": "1.0.0",
-    "baseUrl": "/api"
+    "baseUrl": "/api",
+    "theme": {
+      "accent": "#1d9e75",
+      "accentLight": "#e1f5ee",
+      "accentDark": "#085041",
+      "colorGet": "#1a5fa8",
+      "colorPost": "#6b3a9e",
+      "colorPut": "#b84a0e",
+      "colorDelete": "#a8192e",
+      "fontBody": "\"General Sans\", sans-serif",
+      "fontMono": "\"JetBrainsMono Nerd\", monospace"
+    },
+    "darkTheme": {
+      "accent": "#2ec48f",
+      "accentLight": "#04342c",
+      "accentDark": "#a8f0d4",
+      "colorGet": "#5b9fd6",
+      "colorPost": "#a67dd4",
+      "colorPut": "#e07a45",
+      "colorDelete": "#d95f72"
+    }
   },
   "defaultErrors": [
     {
+      "code": 400,
+      "response": {
+        "code": 400,
+        "message": "Invalid or missing fields"
+      },
+      "appliesTo": ["POST", "PUT"]
+    },
+    {
       "code": 401,
-      "response": { "code": 401, "message": "Unauthorized" },
+      "response": {
+        "code": 401,
+        "message": "Unauthorized, valid token required"
+      },
+      "appliesTo": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "code": 403,
+      "response": {
+        "code": 403,
+        "message": "Forbidden, insufficient permissions"
+      },
       "appliesTo": ["POST", "PUT", "DELETE"]
     },
     {
       "code": 404,
-      "response": { "code": 404, "message": "Resource not found" },
+      "response": {
+        "code": 404,
+        "message": "Resource not found"
+      },
       "appliesTo": ["GET-single", "PUT", "DELETE"]
     },
     {
       "code": 500,
-      "response": { "code": 500, "message": "Internal server error" },
-      "appliesTo": ["GET-list", "GET-single", "POST", "PUT", "DELETE"]
+      "response": {
+        "code": 500,
+        "message": "Internal server error"
+      },
+      "appliesTo": [
+        "GET-list",
+        "GET-single",
+        "POST",
+        "PUT",
+        "DELETE"
+      ]
     }
   ],
   "tables": [
     {
-      "name": { "singular": "user", "plural": "users" },
-      "description": "Registered users of the application.",
-      "uri": "/users",
+      "name": {
+        "singular": "authentication",
+        "plural": "authentication"
+      },
+      "description": "Author authentication via magic link and TOTP. Also handles newsletter subscriber registration and confirmation.",
+      "uri": "/auth",
+      "includedEndpoints": [],
+      "customEndpoints": [
+        {
+          "name": "subscribe",
+          "description": "Sends a confirmation email to the provided address to subscribe to the newsletter.",
+          "uri": "/subscribe",
+          "method": "POST",
+          "tokenRequired": false,
+          "body": { "email": "string" },
+          "responses": [
+            {
+              "code": 200,
+              "response": { "message": "Confirmation mail sent" }
+            },
+            {
+              "code": 400,
+              "response": {
+                "code": 400,
+                "message": "Invalid email address"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Email already subscribed"
+              }
+            },
+            {
+              "code": 429,
+              "response": {
+                "code": 429,
+                "message": "Too many requests, please try again later"
+              }
+            },
+            500
+          ]
+        },
+        {
+          "name": "confirm subscribe",
+          "description": "Confirms a subscription via the token received by email. The token is single-use and expires after a delay.",
+          "uri": "/subscribe/confirm",
+          "method": "GET",
+          "tokenRequired": false,
+          "queryParameters": [
+            {
+              "label": "Token",
+              "name": "token",
+              "type": "string",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "User successfully subscribed"
+              }
+            },
+            {
+              "code": 400,
+              "response": {
+                "code": 400,
+                "message": "Invalid or expired token"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "User not found"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "User already subscribed"
+              }
+            },
+            500
+          ]
+        },
+        {
+          "name": "generate author totp seed",
+          "description": "Generates a TOTP seed for an existing author account. Requires a valid JWT token. Useful for resetting an author's TOTP access.",
+          "uri": "/seed",
+          "method": "POST",
+          "tokenRequired": true,
+          "body": { "email": "string" },
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "TOTP seed successfully generated",
+                "totpseed": "string"
+              }
+            },
+            {
+              "code": 400,
+              "response": {
+                "code": 400,
+                "message": "Invalid email address"
+              }
+            },
+            401,
+            403,
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Author not found"
+              }
+            },
+            500
+          ]
+        },
+        {
+          "name": "author registration",
+          "description": "Creates a new author account (role AUTHOR) and returns the TOTP seed to configure in an authenticator app (e.g. Google Authenticator).",
+          "uri": "/register",
+          "method": "POST",
+          "tokenRequired": true,
+          "body": { "username": "string", "email": "string" },
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "message": "Author successfully registered",
+                "totpseed": "string"
+              }
+            },
+            400,
+            401,
+            403,
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Email already registered"
+              }
+            },
+            500
+          ]
+        },
+        {
+          "name": "author login",
+          "description": "Sends a magic link to the author's email address. The link redirects to the TOTP validation step.",
+          "uri": "/login",
+          "method": "POST",
+          "tokenRequired": false,
+          "body": { "email": "string" },
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "Magic link sent to email"
+              }
+            },
+            {
+              "code": 400,
+              "response": {
+                "code": 400,
+                "message": "Invalid email address"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Author not found"
+              }
+            },
+            {
+              "code": 429,
+              "response": {
+                "code": 429,
+                "message": "Too many requests, please try again later"
+              }
+            },
+            500
+          ]
+        },
+        {
+          "name": "TOTP login",
+          "description": "Validates the 6-digit TOTP code and returns a JWT token to use in the Authorization header of authenticated requests.",
+          "uri": "/login/totp",
+          "method": "POST",
+          "tokenRequired": false,
+          "body": { "token": "string", "code": "string" },
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "Successfully logged in",
+                "token": "string"
+              }
+            },
+            {
+              "code": 400,
+              "response": {
+                "code": 400,
+                "message": "Invalid or expired TOTP code"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "User not found"
+              }
+            },
+            {
+              "code": 429,
+              "response": {
+                "code": 429,
+                "message": "Too many failed attempts, please try again later"
+              }
+            },
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "name": {
+        "singular": "media",
+        "plural": "medias"
+      },
+      "description": "Media files (images) uploaded and automatically converted to WebP. Accessible at /uploads/media/{uuid}/image.webp.",
+      "uri": "/media",
       "uriParameters": [
-        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+        {
+          "name": "id",
+          "type": "integer",
+          "defaultValue": 1,
+          "isPrimary": true
+        }
       ],
       "schema": {
         "id": "integer",
-        "name": "string",
-        "email": "string",
-        "createdAt": "datetime"
+        "textAlternatif": "string",
+        "url": "string",
+        "width": "double?",
+        "height": "double?"
       },
-      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"],
+      "response": {
+        "get-list": {
+          "data": "array-media",
+          "total": "integer",
+          "page": "integer",
+          "pageSize": "integer"
+        },
+        "get-single": {
+          "id": "integer",
+          "textAlternatif": "string",
+          "url": "string",
+          "width": "double?",
+          "height": "double?"
+        }
+      },
+      "listParameters": [
+        {
+          "name": "page",
+          "label": "Page",
+          "type": "integer",
+          "defaultValue": 1,
+          "min": 1
+        },
+        {
+          "name": "limit",
+          "label": "Limit",
+          "type": "integer",
+          "defaultValue": 20,
+          "min": 1,
+          "max": 100
+        }
+      ],
       "endpoints": {
-        "GET-list": { "description": "Returns the list of all users." },
-        "GET-single": { "description": "Returns a single user by ID." },
+        "GET-list": {
+          "description": "Returns the paginated list of media files."
+        },
+        "GET-single": {
+          "description": "Returns a media file by its ID."
+        },
         "POST": {
-          "description": "Creates a new user.",
+          "description": "Uploads an image. The file is automatically converted to WebP.",
+          "includedErrors": [401, 500],
           "body": {
-            "schema": { "name": "string", "email": "string" },
-            "defaultValue": "{\n\t\"name\": \"Alice\",\n\t\"email\": \"alice@example.com\"\n}"
+            "multipart": true,
+            "fields": [
+              {
+                "name": "textAlternatif",
+                "label": "Alternative text",
+                "type": "string",
+                "required": true
+              },
+              {
+                "name": "file",
+                "label": "File",
+                "type": "file",
+                "required": true,
+                "accept": ["image/*"],
+                "maxWeight": 10
+              }
+            ]
           },
           "responses": [
             {
               "code": 201,
-              "response": { "id": "integer", "name": "string", "email": "string" }
+              "response": {
+                "id": "integer",
+                "textAlternatif": "string",
+                "url": "string",
+                "width": "double?",
+                "height": "double?"
+              }
+            },
+            {
+              "code": 413,
+              "response": {
+                "code": 413,
+                "message": "File too large, maximum size is 5 MB"
+              }
+            },
+            {
+              "code": 415,
+              "response": {
+                "code": 415,
+                "message": "Unsupported media type"
+              }
+            }
+          ]
+        },
+        "PUT": {
+          "description": "Updates the alternative text of an existing media file.",
+          "body": {
+            "schema": { "textAlternatif": "string" },
+            "defaultValue": "{\n\t\"textAlternatif\": \"My image\"\n}"
+          },
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "id": "integer",
+                "textAlternatif": "string",
+                "url": "string",
+                "width": "double?",
+                "height": "double?"
+              }
+            }
+          ]
+        },
+        "DELETE": {
+          "description": "Deletes a media file. Fails if the file is still referenced by an issue.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "Media successfully deleted"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Media is referenced by one or more resources and cannot be deleted"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": {
+        "singular": "user",
+        "plural": "users"
+      },
+      "description": "Newsletter subscribers and authors. Authors can log in and manage issues; subscribers receive the newsletter.",
+      "uri": "/user",
+      "uriParameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "defaultValue": 1,
+          "isPrimary": true
+        }
+      ],
+      "schema": {
+        "id": "integer",
+        "username": "string?",
+        "email": "string",
+        "role": "USER | AUTHOR",
+        "link": "string?",
+        "picture": "foreignKey-media",
+        "subscribedAt": "timestamp?",
+        "isSupporter": "boolean",
+        "createdAt": "timestamp"
+      },
+      "response": {
+        "get-list": {
+          "data": "array-user",
+          "total": "integer",
+          "page": "integer",
+          "pageSize": "integer"
+        },
+        "get-single": {
+          "id": "integer",
+          "username": "string?",
+          "email": "string",
+          "role": "USER | AUTHOR",
+          "link": "string?",
+          "picture": "foreignKey-media",
+          "subscribedAt": "timestamp?",
+          "isSupporter": "boolean",
+          "createdAt": "timestamp",
+          "issues": "array-issue"
+        }
+      },
+      "listParameters": [
+        {
+          "name": "page",
+          "label": "Page",
+          "type": "integer",
+          "defaultValue": 1,
+          "min": 1
+        },
+        {
+          "name": "limit",
+          "label": "Limit",
+          "type": "integer",
+          "defaultValue": 20,
+          "min": 1,
+          "max": 100
+        },
+        {
+          "name": "role",
+          "label": "Role",
+          "type": "select",
+          "options": [
+            { "name": "USER", "label": "Subscriber" },
+            { "name": "AUTHOR", "label": "Author" }
+          ]
+        }
+      ],
+      "endpoints": {
+        "GET-list": {
+          "description": "Returns the paginated list of users. The totpSeed field is never exposed."
+        },
+        "GET-single": {
+          "description": "Returns a user by their ID. The totpSeed field is never exposed."
+        },
+        "POST": {
+          "description": "Creates a new user. To create an author with TOTP, use the /auth/register endpoint.",
+          "body": {
+            "schema": {
+              "username": "string?",
+              "email": "string",
+              "role": "USER | AUTHOR",
+              "link": "string?",
+              "picture": "integer?"
+            },
+            "defaultValue": "{\n\t\"username\": \"DevGirl_\",\n\t\"email\": \"contact@lauradurieux.dev\",\n\t\"role\": \"AUTHOR\",\n\t\"link\": \"hihihuhuh.com\"\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "id": "integer",
+                "username": "string?",
+                "email": "string",
+                "role": "USER | AUTHOR",
+                "link": "string?",
+                "picture": "foreignKey-media",
+                "subscribedAt": "timestamp?",
+                "isSupporter": "boolean",
+                "createdAt": "timestamp"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Email already registered"
+              }
             }
           ]
         },
         "PUT": {
           "description": "Updates an existing user.",
           "body": {
-            "schema": { "name": "string", "email": "string" }
+            "schema": {
+              "username": "string?",
+              "email": "string",
+              "role": "USER | AUTHOR",
+              "link": "string?",
+              "subscribedAt": "timestamp?",
+              "isSupporter": "boolean",
+              "picture": "integer?"
+            }
           },
           "responses": [
             {
               "code": 200,
-              "response": { "id": "integer", "name": "string", "email": "string" }
+              "response": {
+                "id": "integer",
+                "username": "string?",
+                "email": "string",
+                "role": "USER | AUTHOR",
+                "link": "string?",
+                "picture": "foreignKey-media",
+                "subscribedAt": "timestamp?",
+                "isSupporter": "boolean",
+                "createdAt": "timestamp"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Email already in use"
+              }
             }
           ]
         },
-        "DELETE": { "description": "Deletes a user permanently." }
+        "DELETE": {
+          "description": "Deletes a user. IssueAuthor associations are deleted in cascade."
+        }
       }
     },
     {
-      "name": { "singular": "note", "plural": "notes" },
-      "description": "Short text notes belonging to a user.",
-      "uri": "/notes",
+      "name": {
+        "singular": "tag",
+        "plural": "tags"
+      },
+      "description": "Tags used to categorize newsletter issues. Identified by their name (primary key, max 64 characters).",
+      "uri": "/tag",
       "uriParameters": [
-        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+        {
+          "name": "name",
+          "type": "string",
+          "defaultValue": "Computer Science",
+          "isPrimary": true
+        }
       ],
       "schema": {
-        "id": "integer",
-        "title": "string",
-        "content": "string?",
-        "author": "foreignKey-user",
-        "createdAt": "datetime"
+        "name": "string",
+        "color": "string"
       },
-      "listParameters": [
-        { "name": "page", "label": "Page", "type": "integer", "defaultValue": 1, "min": 1 },
-        { "name": "limit", "label": "Limit", "type": "integer", "defaultValue": 20, "min": 1, "max": 100 }
+      "includedEndpoints": [
+        "GET-list",
+        "GET-single",
+        "POST",
+        "PUT",
+        "DELETE"
       ],
-      "includedEndpoints": ["GET-list", "GET-single", "POST", "PUT", "DELETE"],
       "endpoints": {
-        "GET-list": { "description": "Returns a paginated list of notes." },
-        "GET-single": { "description": "Returns a single note by ID." },
+        "GET-list": {
+          "description": "Returns all available tags."
+        },
+        "GET-single": {
+          "description": "Returns a tag by its name."
+        },
         "POST": {
-          "description": "Creates a new note.",
+          "description": "Creates a new tag. The name is the primary key (max 64 characters) and cannot be changed after creation.",
           "body": {
-            "schema": { "title": "string", "content": "string?", "authorId": "integer" },
-            "defaultValue": "{\n\t\"title\": \"My first note\",\n\t\"content\": \"Hello, world!\",\n\t\"authorId\": 1\n}"
+            "schema": { "name": "string", "color": "string" },
+            "defaultValue": "{\n\t\"name\": \"Computer Science\",\n\t\"color\": \"#6b3a9e\"\n}"
           },
           "responses": [
             {
               "code": 201,
-              "response": { "id": "integer", "title": "string", "content": "string?" }
+              "response": { "name": "string", "color": "string" }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Tag already exists"
+              }
             }
           ]
         },
         "PUT": {
-          "description": "Updates an existing note.",
+          "description": "Updates the color of an existing tag.",
           "body": {
-            "schema": { "title": "string", "content": "string?" }
+            "schema": { "color": "string" },
+            "defaultValue": "{\n\t\"color\": \"#123456\"\n}"
           },
           "responses": [
             {
               "code": 200,
-              "response": { "id": "integer", "title": "string", "content": "string?" }
+              "response": { "name": "string", "color": "string" }
             }
           ]
         },
-        "DELETE": { "description": "Deletes a note permanently." }
+        "DELETE": {
+          "description": "Deletes a tag. IssueTag associations are deleted in cascade."
+        }
+      }
+    },
+    {
+      "name": {
+        "singular": "sponsor",
+        "plural": "sponsors"
+      },
+      "description": "Sponsors associated with newsletter issues. Identified by their name (primary key). The link specific to an issue is stored in the IssueSponsor table.",
+      "uri": "/sponsor",
+      "uriParameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "defaultValue": "Firefox",
+          "isPrimary": true
+        }
+      ],
+      "schema": {
+        "name": "string",
+        "link": "string"
+      },
+      "includedEndpoints": [
+        "GET-list",
+        "GET-single",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "endpoints": {
+        "GET-list": {
+          "description": "Returns all sponsors."
+        },
+        "GET-single": {
+          "description": "Returns a sponsor by its name."
+        },
+        "POST": {
+          "description": "Creates a new sponsor. The name is the primary key and cannot be changed after creation.",
+          "body": {
+            "schema": { "name": "string", "link": "string" },
+            "defaultValue": "{\n\t\"name\": \"Firefox\",\n\t\"link\": \"firefox.com\"\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": { "name": "string", "link": "string" }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Sponsor already exists"
+              }
+            }
+          ]
+        },
+        "PUT": {
+          "description": "Updates the default link of an existing sponsor.",
+          "body": {
+            "schema": { "link": "string" },
+            "defaultValue": "{\n\t\"link\": \"firefox.com\"\n}"
+          },
+          "responses": [
+            {
+              "code": 200,
+              "response": { "name": "string", "link": "string" }
+            }
+          ]
+        },
+        "DELETE": {
+          "description": "Deletes a sponsor. IssueSponsor associations are deleted in cascade."
+        }
+      }
+    },
+    {
+      "name": {
+        "singular": "issue",
+        "plural": "issues"
+      },
+      "description": "Newsletter issues — drafts, published, and archived. Each issue has rich content, a cover image, authors, tags, and sponsors.",
+      "uri": "/issue",
+      "uriParameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "defaultValue": 1,
+          "isPrimary": true
+        }
+      ],
+      "schema": {
+        "id": "integer",
+        "slug": "string",
+        "title": "string",
+        "subtitle": "string",
+        "cover": "foreignKey-media",
+        "createdAt": "timestamp",
+        "publishedAt": "timestamp?",
+        "updatedAt": "timestamp?",
+        "issueNumber": "integer",
+        "excerpt": "string",
+        "content": "string",
+        "isSponsored": "boolean",
+        "status": "DRAFT | PUBLISHED | ARCHIVE",
+        "openedMailCount": "integer"
+      },
+      "includedEndpoints": [
+        "GET-list",
+        "GET-single",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "response": {
+        "get-list": {
+          "data": "array-issue",
+          "total": "integer",
+          "page": "integer",
+          "pageSize": "integer"
+        },
+        "get-single": {
+          "id": "integer",
+          "slug": "string",
+          "title": "string",
+          "subtitle": "string",
+          "cover": "foreignKey-media",
+          "createdAt": "timestamp",
+          "publishedAt": "timestamp?",
+          "updatedAt": "timestamp?",
+          "issueNumber": "integer",
+          "excerpt": "string",
+          "content": "string",
+          "isSponsored": "boolean",
+          "status": "DRAFT | PUBLISHED | ARCHIVE",
+          "openedMailCount": "integer",
+          "views": "integer",
+          "authors": "array-user",
+          "tags": "array-tag",
+          "sponsors": "array-sponsor"
+        }
+      },
+      "listParameters": [
+        {
+          "name": "page",
+          "label": "Page",
+          "type": "integer",
+          "defaultValue": 1,
+          "min": 1
+        },
+        {
+          "name": "limit",
+          "label": "Limit",
+          "type": "integer",
+          "defaultValue": 20,
+          "min": 1,
+          "max": 100
+        },
+        {
+          "name": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            { "name": "DRAFT", "label": "Draft" },
+            { "name": "PUBLISHED", "label": "Published" },
+            { "name": "ARCHIVE", "label": "Archived" }
+          ]
+        }
+      ],
+      "endpoints": {
+        "GET-list": {
+          "description": "Returns the paginated list of issues, optionally filtered by status."
+        },
+        "GET-single": {
+          "description": "Returns an issue by its ID, including its authors, tags, and sponsors."
+        },
+        "POST": {
+          "description": "Creates a new issue. The slug is auto-generated from the title if not provided. The issue number must be unique.",
+          "body": {
+            "schema": {
+              "slug": "string?",
+              "title": "string",
+              "subtitle": "string",
+              "issueNumber": "integer",
+              "excerpt": "string",
+              "content": "string",
+              "isSponsored": "boolean?",
+              "status": "DRAFT | PUBLISHED | ARCHIVE",
+              "cover": "integer?"
+            },
+            "defaultValue": "{\n\t\"title\": \"My first issue\",\n\t\"subtitle\": \"A great subtitle\",\n\t\"issueNumber\": 1,\n\t\"excerpt\": \"A short excerpt\",\n\t\"content\": \"Full content here\",\n\t\"status\": \"DRAFT\"\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "id": "integer",
+                "slug": "string",
+                "title": "string",
+                "subtitle": "string",
+                "cover": "foreignKey-media",
+                "createdAt": "timestamp",
+                "issueNumber": "integer",
+                "excerpt": "string",
+                "content": "string",
+                "isSponsored": "boolean",
+                "status": "DRAFT | PUBLISHED | ARCHIVE",
+                "openedMailCount": "integer"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Issue number already exists"
+              }
+            }
+          ]
+        },
+        "PUT": {
+          "description": "Updates an existing issue. All fields are required.",
+          "body": {
+            "schema": {
+              "slug": "string?",
+              "title": "string",
+              "subtitle": "string",
+              "issueNumber": "integer",
+              "excerpt": "string",
+              "content": "string",
+              "isSponsored": "boolean?",
+              "status": "DRAFT | PUBLISHED | ARCHIVE",
+              "cover": "integer?"
+            },
+            "defaultValue": "{\n\t\"title\": \"My first issue\",\n\t\"subtitle\": \"A great subtitle\",\n\t\"issueNumber\": 1,\n\t\"excerpt\": \"A short excerpt\",\n\t\"content\": \"Full content here\",\n\t\"status\": \"DRAFT\"\n}"
+          },
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "id": "integer",
+                "slug": "string",
+                "title": "string",
+                "subtitle": "string",
+                "cover": "foreignKey-media",
+                "createdAt": "timestamp",
+                "publishedAt": "timestamp?",
+                "updatedAt": "timestamp?",
+                "issueNumber": "integer",
+                "excerpt": "string",
+                "content": "string",
+                "isSponsored": "boolean",
+                "status": "DRAFT | PUBLISHED | ARCHIVE",
+                "openedMailCount": "integer"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Issue number already in use by another issue"
+              }
+            }
+          ]
+        },
+        "DELETE": {
+          "description": "Deletes an issue. IssueTag, IssueAuthor, and IssueSponsor associations are deleted in cascade."
+        }
+      },
+      "customEndpoints": [
+        {
+          "name": "publish",
+          "description": "Publishes an issue and sends the newsletter to active subscribers. Sets status to PUBLISHED and records publishedAt.",
+          "uri": "/{ID}/publish",
+          "method": "POST",
+          "tokenRequired": true,
+          "uriParameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "defaultValue": 1,
+              "isPrimary": true
+            }
+          ],
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "Issue published and newsletter sent"
+              }
+            },
+            401,
+            403,
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue not found"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Issue is already published"
+              }
+            },
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "name": {
+        "singular": "issue tag",
+        "plural": "issue tags"
+      },
+      "description": "Association between an issue and a tag (IssueTag table). URI: /issue/{id}/tag. Deletions are cascaded.",
+      "uri": "/issue/{ID}/tag",
+      "uriParameters": [
+        {
+          "name": "tagName",
+          "type": "string",
+          "defaultValue": "Software",
+          "isPrimary": true
+        },
+        { "name": "id", "type": "integer", "defaultValue": 1 }
+      ],
+      "schema": {
+        "tagName": "string",
+        "issueId": "integer"
+      },
+      "includedEndpoints": ["GET-list", "POST", "DELETE"],
+      "endpoints": {
+        "GET-list": {
+          "description": "Returns all tags associated with the issue.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "data": [{ "name": "string", "color": "string" }]
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue not found"
+              }
+            }
+          ]
+        },
+        "POST": {
+          "description": "Associates an existing tag with the issue.",
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "tagName": "string",
+                "issueId": "integer"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue or tag not found"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Tag already associated with this issue"
+              }
+            }
+          ]
+        },
+        "DELETE": {
+          "description": "Removes a tag from the issue.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "Tag successfully removed from issue"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue, tag or association not found"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": {
+        "singular": "issue author",
+        "plural": "issue authors"
+      },
+      "description": "Association between an issue and an author (IssueAuthor table). URI: /issue/{id}/author. Deletions are cascaded.",
+      "uri": "/issue/{ID}/author",
+      "uriParameters": [
+        {
+          "name": "userId",
+          "type": "integer",
+          "defaultValue": 1,
+          "isPrimary": true
+        },
+        { "name": "id", "type": "integer", "defaultValue": 1 }
+      ],
+      "schema": {
+        "userId": "integer",
+        "issueId": "integer"
+      },
+      "includedEndpoints": ["GET-list", "POST", "DELETE"],
+      "endpoints": {
+        "GET-list": {
+          "description": "Returns all authors associated with the issue.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "data": [
+                  {
+                    "id": "integer",
+                    "username": "string?",
+                    "email": "string",
+                    "role": "USER | AUTHOR",
+                    "link": "string?",
+                    "picture": "foreignKey-media"
+                  }
+                ]
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue not found"
+              }
+            }
+          ]
+        },
+        "POST": {
+          "description": "Associates an author with the issue. The user must have the AUTHOR role.",
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "userId": "integer",
+                "issueId": "integer"
+              }
+            },
+            {
+              "code": 400,
+              "response": {
+                "code": 400,
+                "message": "User is not an author"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue or user not found"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Author already associated with this issue"
+              }
+            }
+          ]
+        },
+        "DELETE": {
+          "description": "Removes an author from the issue.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "Author successfully removed from issue"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue, user or association not found"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": {
+        "singular": "issue sponsor",
+        "plural": "issue sponsors"
+      },
+      "description": "Association between an issue and a sponsor (IssueSponsor table). Each association has its own advertising link, separate from the sponsor's default link. URI: /issue/{id}/sponsor.",
+      "uri": "/issue/{ID}/sponsor",
+      "uriParameters": [
+        {
+          "name": "sponsorName",
+          "type": "string",
+          "defaultValue": "Lilymonad",
+          "isPrimary": true
+        },
+        { "name": "id", "type": "integer", "defaultValue": 1 }
+      ],
+      "schema": {
+        "sponsorName": "string",
+        "issueId": "integer",
+        "link": "string"
+      },
+      "includedEndpoints": ["GET-list", "POST", "DELETE"],
+      "endpoints": {
+        "GET-list": {
+          "description": "Returns all sponsors associated with the issue, including their issue-specific link.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "data": [
+                  {
+                    "sponsorName": "string",
+                    "issueId": "integer",
+                    "link": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue not found"
+              }
+            }
+          ]
+        },
+        "POST": {
+          "description": "Associates a sponsor with the issue using an advertising link specific to this issue.",
+          "body": { "link": "string" },
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "sponsorName": "string",
+                "issueId": "integer",
+                "link": "string"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue or sponsor not found"
+              }
+            },
+            {
+              "code": 409,
+              "response": {
+                "code": 409,
+                "message": "Sponsor already associated with this issue"
+              }
+            }
+          ]
+        },
+        "DELETE": {
+          "description": "Removes a sponsor from the issue.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "message": "Sponsor successfully removed from issue"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue, sponsor or association not found"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": {
+        "singular": "view",
+        "plural": "views"
+      },
+      "description": "Page view tracking per issue, identified by hashed IP to preserve reader privacy.",
+      "uri": "/view",
+      "uriParameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "defaultValue": 1,
+          "isPrimary": true
+        }
+      ],
+      "schema": {
+        "id": "integer",
+        "time": "timestamp",
+        "hashedIp": "string",
+        "issueId": "integer"
+      },
+      "includedEndpoints": ["GET-list", "POST"],
+      "tokenRequired": { "post": false },
+      "listParameters": [
+        {
+          "name": "page",
+          "label": "Page",
+          "type": "integer",
+          "defaultValue": 1,
+          "min": 1
+        },
+        {
+          "name": "limit",
+          "label": "Limit",
+          "type": "integer",
+          "defaultValue": 20,
+          "min": 1,
+          "max": 100
+        },
+        {
+          "name": "issueId",
+          "label": "Issue ID",
+          "type": "integer"
+        }
+      ],
+      "endpoints": {
+        "GET-list": {
+          "description": "Returns the paginated list of views, optionally filtered by issue.",
+          "responses": [
+            {
+              "code": 200,
+              "response": {
+                "data": [
+                  {
+                    "id": "integer",
+                    "time": "timestamp",
+                    "hashedIp": "string",
+                    "issueId": "integer"
+                  }
+                ],
+                "total": "integer",
+                "page": "integer",
+                "pageSize": "integer"
+              }
+            }
+          ]
+        },
+        "POST": {
+          "description": "Records a view for an issue. The IP is hashed server-side; no personal data is stored.",
+          "includedErrors": [500],
+          "body": {
+            "schema": { "issueId": "integer" },
+            "defaultValue": "{\n\t\"issueId\": 1\n}"
+          },
+          "responses": [
+            {
+              "code": 201,
+              "response": {
+                "id": "integer",
+                "time": "timestamp",
+                "issueId": "integer"
+              }
+            },
+            {
+              "code": 400,
+              "response": {
+                "code": 400,
+                "message": "Invalid or missing issueId"
+              }
+            },
+            {
+              "code": 404,
+              "response": {
+                "code": 404,
+                "message": "Issue not found"
+              }
+            }
+          ]
+        }
       }
     }
   ]
