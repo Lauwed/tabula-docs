@@ -6,8 +6,7 @@
 [![license](https://img.shields.io/github/license/Lauwed/tabula-docs)](./LICENSE)
 [![CI](https://github.com/Lauwed/tabula-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/Lauwed/tabula-docs/actions)
 
-<!-- Replace with a real screenshot or GIF once the demo is live -->
-<!-- ![Tabula demo](docs/assets/demo.gif) -->
+<img width="1710" height="1004" alt="image" src="https://github.com/user-attachments/assets/583c95d1-bc84-4363-b95c-2e36298e8bbe" />
 
 ---
 
