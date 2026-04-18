@@ -37,7 +37,7 @@ jobs:
           cp src/constants.js _site/
           cp src/endpoints.js _site/
           cp src/inputs.js _site/
-          cp examples/blog/api.json _site/
+          cp examples/ecommerce/api.json _site/
 
       - uses: actions/configure-pages@v5
 
