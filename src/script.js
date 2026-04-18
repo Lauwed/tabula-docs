@@ -4,7 +4,7 @@ let token;
 let apiBaseUrl = '/api';
 
 window.addEventListener('load', async () => {
-	const res = await fetch('./api.json');
+	const res = await fetch(`./api.json?v=${Date.now()}`);
 	const data = await res.json();
 
 	if (data.settings) applySettings(data.settings);

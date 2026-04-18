@@ -6,6 +6,7 @@ on:
     paths:
       - "src/**"
       - "examples/ecommerce/**"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
 permissions:
