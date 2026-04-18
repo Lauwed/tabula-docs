@@ -4,7 +4,7 @@
   "description": "Static, dependency-free API documentation driven by a single JSON file.",
   "type": "module",
   "bin": {
-    "tabula": "./bin/tabula.mjs"
+    "tabula": "bin/tabula.mjs"
   },
   "files": [
     "src",
@@ -30,9 +30,17 @@
   "homepage": "https://github.com/Lauwed/tabula-docs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Lauwed/tabula-docs.git"
+    "url": "git+https://github.com/Lauwed/tabula-docs.git"
   },
   "bugs": {
     "url": "https://github.com/Lauwed/tabula-docs/issues"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "validate:examples": "for f in examples/*/api.json; do node bin/validate-api.mjs \"$f\"; done",
+    "fmt": "prettier --write \"src/**/*.{js,css,html}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
   }
 }

@@ -298,7 +298,7 @@
         "reference": "string",
         "status": "PENDING | CONFIRMED | SHIPPED | DELIVERED | CANCELLED",
         "customer": "foreignKey-customer",
-        "items": "array-order-item",
+        "items": "array-order-line",
         "totalAmount": "double?",
         "createdAt": "datetime"
       },
@@ -336,7 +336,7 @@
           "body": {
             "schema": {
               "customerId": "integer",
-              "items": [{ "productId": "integer", "quantity": "integer" }]
+              "items": "array-order-line"
             },
             "defaultValue": "{\n\t\"customerId\": 1,\n\t\"items\": [\n\t\t{ \"productId\": 1, \"quantity\": 2 }\n\t]\n}"
           },
@@ -401,6 +401,30 @@
             500
           ]
         }
+      ]
+    },
+    {
+      "name": { "singular": "order-line", "plural": "order-lines" },
+      "description": "Individual line items within an order, each linking a product to a quantity and unit price.",
+      "uri": "/order-lines",
+      "uriParameters": [
+        { "name": "id", "type": "integer", "defaultValue": 1, "isPrimary": true }
+      ],
+      "schema": {
+        "id": "integer",
+        "order": "foreignKey-order",
+        "product": "foreignKey-product",
+        "quantity": "integer",
+        "unitPrice": "double?",
+        "totalPrice": "double?"
+      },
+      "includedEndpoints": ["GET-list", "GET-single"],
+      "endpoints": {
+        "GET-list": { "description": "Returns all line items. Filter by order using query parameters." },
+        "GET-single": { "description": "Returns a single line item by ID." }
+      },
+      "listParameters": [
+        { "name": "orderId", "label": "Order ID", "type": "integer", "defaultValue": 1 }
       ]
     }
   ]
