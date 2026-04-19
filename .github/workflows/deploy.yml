@@ -43,7 +43,7 @@ jobs:
           cp src/inputs.js _site/
           cp examples/ecommerce/api.json _site/
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v5
         with:
