@@ -48,7 +48,7 @@ const TEMPLATES = [
 	},
 ];
 
-// Names of src/ files that tabula sync is allowed to overwrite.
+// Names of src/ files that tabula-docs sync is allowed to overwrite.
 // This list must stay in sync with the actual contents of src/.
 const SRC_FILES = [
 	'index.html',
@@ -141,10 +141,10 @@ const usage = () => {
 ${bold('tabula')} — Static, dependency-free API documentation
 
 ${bold('Usage')}
-  tabula init [dir] [--template <name>]   Scaffold a new docs folder
-  tabula sync [dir]                        Sync src/ files to the installed version
-  tabula validate [path]                   Validate an api.json file
-  tabula serve [dir] [--port <number>]     Serve a docs folder locally
+  tabula-docs init [dir] [--template <name>]   Scaffold a new docs folder
+  tabula-docs sync [dir]                        Sync src/ files to the installed version
+  tabula-docs validate [path]                   Validate an api.json file
+  tabula-docs serve [dir] [--port <number>]     Serve a docs folder locally
 
 ${bold('init options')}
   [dir]                  Target folder name  ${dim('(wizard if omitted, default: docs)')}
@@ -159,11 +159,11 @@ ${bold('Global options')}
   --version, -v          Show the package version
 
 ${bold('Examples')}
-  tabula init
-  tabula init my-api-docs --template blog
-  tabula sync my-api-docs
-  tabula validate my-api-docs/api.json
-  tabula serve my-api-docs --port 8080
+  tabula-docs init
+  tabula-docs init my-api-docs --template blog
+  tabula-docs sync my-api-docs
+  tabula-docs validate my-api-docs/api.json
+  tabula-docs serve my-api-docs --port 8080
 `);
 };
 
@@ -317,8 +317,8 @@ ${green('Done!')} Your docs folder is ready.
 
   cd ${folderName}
   ${bold('$EDITOR api.json')}      — describe your API
-  ${bold('tabula serve .')}        — preview in the browser
-  ${bold('tabula validate .')}     — check for schema errors
+  ${bold('tabula-docs serve .')}        — preview in the browser
+  ${bold('tabula-docs validate .')}     — check for schema errors
 `);
 }
 
@@ -334,7 +334,7 @@ async function cmdSync(dir) {
 
 	if (!existsSync(target)) {
 		console.error(red(`Error: directory not found — ${target}`));
-		console.error('Run tabula init to create a new docs folder.');
+		console.error('Run tabula-docs init to create a new docs folder.');
 		process.exit(1);
 	}
 
@@ -365,7 +365,7 @@ async function cmdSync(dir) {
 ${green('Done!')} src/ files updated to v${currentVersion}.
 
   ${dim('api.json and custom assets were not modified.')}
-  Run ${bold('tabula serve ' + dir)} to verify the update.
+  Run ${bold('tabula-docs serve ' + dir)} to verify the update.
 `);
 }
 
@@ -449,7 +449,7 @@ Press ${bold('Ctrl+C')} to stop.
 	server.on('error', (err) => {
 		if (err.code === 'EADDRINUSE') {
 			console.error(red(`Error: port ${port} is already in use.`));
-			console.error(`Try a different port:  tabula serve ${dir} --port ${port + 1}`);
+			console.error(`Try a different port:  tabula-docs serve ${dir} --port ${port + 1}`);
 		} else {
 			console.error(red(`Server error: ${err.message}`));
 		}
