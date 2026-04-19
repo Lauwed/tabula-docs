@@ -1,0 +1,43 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run a full scan every Monday at 08:00 UTC, independent of commits
+    - cron: '0 8 * * 1'
+
+jobs:
+  analyze:
+    name: Analyze (JavaScript)
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Required to upload SARIF results to the Security tab
+      security-events: write
+      # Required to read the repository contents
+      contents: read
+      # Required to read Actions metadata
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          # Restrict scanning to the files that actually ship.
+          # test/ and examples/ are excluded — they contain no production code.
+          paths-ignore: |
+            test/
+            examples/
+
+      # No build step needed — CodeQL auto-builds interpreted languages.
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:javascript

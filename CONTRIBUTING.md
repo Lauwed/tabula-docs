@@ -51,13 +51,13 @@ Tests use Node's built-in `node:test` module — no test runner to install.
 
 This project follows [Conventional Commits](https://www.conventionalcommits.org/):
 
-| Prefix | When to use |
-| --- | --- |
-| `feat:` | New feature or capability |
-| `fix:` | Bug fix |
-| `docs:` | Documentation only |
-| `chore:` | Tooling, config, dependencies |
-| `test:` | Adding or updating tests |
+| Prefix      | When to use                          |
+| ----------- | ------------------------------------ |
+| `feat:`     | New feature or capability            |
+| `fix:`      | Bug fix                              |
+| `docs:`     | Documentation only                   |
+| `chore:`    | Tooling, config, dependencies        |
+| `test:`     | Adding or updating tests             |
 | `refactor:` | Code change with no behaviour change |
 
 Examples:
@@ -80,6 +80,9 @@ docs: clarify tokenRequired defaults in schema-reference
 
 Please keep PRs focused — one concern per PR makes review faster.
 
+> **Note** — The `main` branch is protected. Direct pushes are not allowed.
+> All changes must go through a pull request and pass the CI checks before merging.
+
 ---
 
 ## What we will and won't accept
@@ -87,6 +90,7 @@ Please keep PRs focused — one concern per PR makes review faster.
 Tabula is intentionally minimal. Before opening a PR for a new feature, please open an issue first to discuss it.
 
 **Likely accepted:**
+
 - Bug fixes.
 - New linter rules that catch real errors.
 - New example `api.json` files.
@@ -94,6 +98,7 @@ Tabula is intentionally minimal. Before opening a PR for a new feature, please o
 - Accessibility fixes in `src/`.
 
 **Unlikely accepted:**
+
 - Any runtime dependency added to `src/`.
 - A build step or bundler.
 - TypeScript in `src/`.
@@ -110,3 +115,14 @@ All JavaScript is formatted with [Prettier](https://prettier.io/) using the conf
 ```bash
 npx prettier --write "src/**/*.{js,css,html}"
 ```
+
+---
+
+## Repository security
+
+This repository uses the following automated security tooling:
+
+- **Dependabot** — opens weekly PRs to keep `devDependencies` and GitHub Actions up to date. These PRs are labeled `dependencies` and go through the same CI checks as any other PR.
+- **CodeQL** — static analysis runs on every push and PR targeting `main`, and on a weekly schedule. Results are visible in the **Security → Code scanning** tab of the repository.
+
+If you discover a security vulnerability, please report it privately via [GitHub Security Advisories](https://github.com/Lauwed/tabula-docs/security/advisories/new) rather than opening a public issue. See [`SECURITY.md`](./SECURITY.md) for the full policy and response timeline.

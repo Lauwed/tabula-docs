@@ -1,6 +1,6 @@
 {
 	"name": "tabula-docs",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Static, dependency-free API documentation driven by a single JSON file.",
 	"type": "module",
 	"bin": {
@@ -10,6 +10,8 @@
 		"src",
 		"bin",
 		"examples/minimal",
+		"examples/blog",
+		"examples/ecommerce",
 		"README.md",
 		"LICENSE"
 	],
@@ -28,7 +30,7 @@
 	],
 	"author": "Lauwed",
 	"license": "MIT",
-	"homepage": "https://github.com/Lauwed/tabula-docs",
+	"homepage": "https://lauwed.github.io/tabula-docs/",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Lauwed/tabula-docs.git"
