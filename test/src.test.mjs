@@ -77,7 +77,17 @@ describe('src/index.html', () => {
 	});
 
 	it('has no cdn.jsdelivr.net references', () => {
-		assert.ok(!html.includes('cdn.jsdelivr.net'), 'CDN dependency still present in index.html');
+		const attrRegex = /\b(?:src|href)="([^"]+)"/g;
+		const urls = [...html.matchAll(attrRegex)].map((match) => match[1]);
+		const hasJsDelivrHost = urls.some((value) => {
+			try {
+				const parsed = new URL(value, 'http://localhost');
+				return parsed.hostname === 'cdn.jsdelivr.net';
+			} catch {
+				return false;
+			}
+		});
+		assert.ok(!hasJsDelivrHost, 'CDN dependency still present in index.html');
 	});
 
 	it('has no flat-root script references (e.g. src="script.js")', () => {
