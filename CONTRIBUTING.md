@@ -113,7 +113,7 @@ When in doubt, open an issue first.
 All JavaScript is formatted with [Prettier](https://prettier.io/) using the config in `.prettierrc` (tabs, single quotes, 100-char print width). Run it before committing:
 
 ```bash
-npx prettier --write "src/**/*.{js,css,html}"
+npx prettier --write "src/**/*.{js,css,html}" "src/*.html"
 ```
 
 ---

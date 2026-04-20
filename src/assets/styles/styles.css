@@ -161,16 +161,34 @@ input {
 code:has(pre) {
 	font-family: var(--font-mono);
 	font-size: var(--font-size-code);
+	padding: var(--space-1) var(--space-3);
 	color: var(--text-primary);
-	padding: var(--space-1) var(--space-2);
 	border: var(--border-muted);
 	border-radius: var(--radius-lg);
 	display: block;
 	background: var(--surface-black-subtle);
+	overflow-x: auto;
 }
 
 pre {
 	margin: 0;
+}
+
+/* json output inside code blocks */
+code:has(ol.json-lines) {
+	padding: 0;
+}
+
+ol.json-lines {
+	margin: 0;
+	padding: var(--space-2) 0;
+	list-style-type: decimal;
+	padding-inline-start: var(--space-7);
+
+	& > li {
+		padding: 1px var(--space-4);
+		white-space: pre;
+	}
 }
 
 /* Utilities */
@@ -298,6 +316,12 @@ pre {
 	color: var(--red);
 	border-color: var(--red);
 	background: rgb(from var(--red) r g b / 0.1);
+}
+
+.fetch-error {
+	font-family: var(--font-mono);
+	font-size: var(--font-size-code);
+	margin: var(--space-2);
 }
 
 /* Tag */
@@ -856,13 +880,7 @@ pre {
 	}
 }
 
-/* pretty-print-json theme override */
-
-.json-container {
-	font-family: var(--font-mono);
-	background-color: var(--bg-secondary);
-	color: var(--text-primary);
-}
+/* pretty-json token colors */
 
 .json-key {
 	color: var(--red);
@@ -885,77 +903,23 @@ pre {
 
 a.json-link {
 	color: var(--purple);
-}
-a.json-link:visited {
-	color: var(--text-secondary);
-}
-a.json-link:hover {
-	color: var(--blue);
-}
-a.json-link:active {
-	color: var(--text-secondary);
-}
 
-ol.json-lines > li::marker {
-	color: var(--text-secondary);
-}
-ol.json-lines > li:nth-child(odd) {
-	background-color: var(--bg-secondary);
-}
-ol.json-lines > li:nth-child(even) {
-	background-color: var(--bg-primary);
-}
-ol.json-lines > li:hover {
-	background-color: rgb(from var(--accent) r g b / 0.08);
-}
-
-@media (prefers-color-scheme: dark) {
-	.json-container {
-		background-color: var(--bg-secondary);
+	&:visited {
+		color: var(--text-secondary);
 	}
-
-	.json-key {
-		color: var(--red);
-	}
-	.json-string {
-		color: var(--accent-dark);
-	}
-	.json-number {
+	&:hover {
 		color: var(--blue);
 	}
-	.json-boolean {
-		color: var(--accent);
-	}
-	.json-null {
+	&:active {
 		color: var(--text-secondary);
 	}
-	.json-mark {
-		color: var(--text-primary);
-	}
+}
 
-	a.json-link {
-		color: var(--purple);
-	}
-	a.json-link:visited {
+ol.json-lines > li {
+	&::marker {
 		color: var(--text-secondary);
 	}
-	a.json-link:hover {
-		color: var(--blue);
-	}
-	a.json-link:active {
-		color: var(--text-secondary);
-	}
-
-	ol.json-lines > li::marker {
-		color: var(--text-secondary);
-	}
-	ol.json-lines > li:nth-child(odd) {
-		background-color: var(--bg-secondary);
-	}
-	ol.json-lines > li:nth-child(even) {
-		background-color: var(--bg-primary);
-	}
-	ol.json-lines > li:hover {
+	&:hover {
 		background-color: rgb(from var(--accent) r g b / 0.08);
 	}
 }
