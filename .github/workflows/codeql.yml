@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript
           # Restrict scanning to the files that actually ship.
@@ -38,6 +38,6 @@ jobs:
 
       # No build step needed — CodeQL auto-builds interpreted languages.
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: /language:javascript
