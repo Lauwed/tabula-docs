@@ -40,11 +40,16 @@ Then open [http://localhost:3000](http://localhost:3000) (or whichever port your
 ```
 my-docs/
 ├── index.html
-├── script.js
-├── styles.css
-├── constants.js
-├── endpoints.js
-├── inputs.js
+├── assets/
+│   ├── images/
+│   ├── scripts/
+│   │   ├── pretty-json.js
+│   │   ├── constants.js
+│   │   ├── endpoints.js
+│   │   ├── inputs.js
+│   │   └── script.js
+│   └── styles/
+│       └── styles.css
 └── api.json        ← your file
 ```
 

@@ -52,11 +52,12 @@ const TEMPLATES = [
 // This list must stay in sync with the actual contents of src/.
 const SRC_FILES = [
 	'index.html',
-	'script.js',
-	'styles.css',
-	'constants.js',
-	'endpoints.js',
-	'inputs.js',
+	'assets/scripts/pretty-json.js',
+	'assets/scripts/script.js',
+	'assets/scripts/constants.js',
+	'assets/scripts/endpoints.js',
+	'assets/scripts/inputs.js',
+	'assets/styles/styles.css',
 ];
 
 // ─── Version check ────────────────────────────────────────────────────────────
@@ -307,7 +308,7 @@ async function cmdInit(dir, template) {
 	await mkdir(target, { recursive: true });
 
 	await cp(srcDir, target, { recursive: true });
-	console.log(green('  ✓') + ' Copied src/ files (index.html, scripts, styles)');
+	console.log(green('  ✓') + ' Copied src/ files (index.html, assets/scripts, assets/styles, assets/images)');
 
 	await cp(templateApi, join(target, 'api.json'));
 	console.log(green('  ✓') + ` Copied api.json (${templateName} template)`);
