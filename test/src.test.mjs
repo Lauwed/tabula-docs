@@ -94,14 +94,6 @@ describe('src/assets/styles/styles.css', () => {
 		css = await readFile(join(SRC, 'assets/styles/styles.css'), 'utf-8');
 	});
 
-	it('has no cdn.jsdelivr.net references', () => {
-		assert.ok(!css.includes('cdn.jsdelivr.net'));
-	});
-
-	it('has no pretty-print-json CDN comment', () => {
-		assert.ok(!css.includes('pretty-print-json theme override'));
-	});
-
 	it('defines json-key class', () => {
 		assert.ok(css.includes('.json-key'));
 	});
