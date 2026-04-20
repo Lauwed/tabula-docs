@@ -39,7 +39,7 @@
 		"url": "https://github.com/Lauwed/tabula-docs/issues"
 	},
 	"scripts": {
-		"prepare": "cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit",
+		"prepare": "cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && cp scripts/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push",
 		"test": "node --test test/validate.test.mjs test/src.test.mjs test/pretty-json.test.mjs test/endpoints.test.mjs",
 		"validate:examples": "for f in examples/*/api.json; do node bin/validate-api.mjs \"$f\"; done",
 		"fmt": "prettier --write \"package.json\" \"src/index.html\" \"src/assets/**/*.{js,css}\""
