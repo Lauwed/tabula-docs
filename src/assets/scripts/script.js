@@ -190,6 +190,14 @@ const buildThemeVars = (theme) => {
 	return vars;
 };
 
+const renderFetchError = (parentNode, message) => {
+	parentNode.innerHTML = '';
+	const el = document.createElement('p');
+	el.classList.add('fetch-error', 'alert', 'alert--danger');
+	el.textContent = message;
+	parentNode.appendChild(el);
+};
+
 const appendFetchedEndpointData = (parentNode, uri, method, opts) => {
 	const apiURI = `${apiBaseUrl}${uri}`;
 
@@ -203,9 +211,29 @@ const appendFetchedEndpointData = (parentNode, uri, method, opts) => {
 		}
 	}
 
+	parentNode.innerHTML = '';
+
 	fetch(apiURI, fetchOpts)
-		.then((r) => r.json())
-		.then((data) => (parentNode.innerHTML = `<pre>${prettyPrintJson.toHtml(data)}</pre>`));
+		.then((r) => {
+			if (!r.ok) {
+				return r
+					.json()
+					.catch(() => null)
+					.then((body) => {
+						const detail = body?.message ?? body?.error ?? r.statusText;
+						throw new Error(`${r.status}${detail ? ` — ${detail}` : ''}`);
+					});
+			}
+			return r.json();
+		})
+		.then((data) => (parentNode.innerHTML = `<pre>${prettyPrintJson.toHtml(data)}</pre>`))
+		.catch((err) => {
+			const isNetwork = err instanceof TypeError;
+			renderFetchError(
+				parentNode,
+				isNetwork ? `Network error: ${err.message}` : `Error: ${err.message}`
+			);
+		});
 };
 
 const getResponseNode = (response) => {

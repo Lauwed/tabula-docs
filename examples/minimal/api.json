@@ -3,8 +3,8 @@
 		"title": "My API",
 		"version": "1.0.0",
 		"baseUrl": "/api",
-		"logo": "./logo.svg",
-		"favicon": "./favicon.svg"
+		"logo": "./assets/images/logo.svg",
+		"favicon": "./assets/images/favicon.svg"
 	},
 	"tables": [
 		{
