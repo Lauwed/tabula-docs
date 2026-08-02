@@ -45,7 +45,7 @@ npx tabula-docs validate path/to/api.json
 
 ### `uriParameters`
 
-- Valid `type` values (`"integer"` or `"string"`).
+- Valid `type` values (`"integer"`, `"string"`, or `"boolean"`).
 - `defaultValue` is present on every parameter.
 - At most one parameter has `"isPrimary": true` per table.
 - If `GET-single`, `PUT`, or `DELETE` are active, exactly one primary parameter must be declared.

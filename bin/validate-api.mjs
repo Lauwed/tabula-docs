@@ -23,9 +23,9 @@ const VALID_INCLUDED_ENDPOINTS = [
   "DELETE",
 ];
 const VALID_METHODS = ["GET", "POST", "PUT", "DELETE"];
-const VALID_PARAM_TYPES = ["integer", "string"];
-const VALID_QUERY_TYPES = ["integer", "string", "select"];
-const VALID_MULTIPART_TYPES = ["string", "file"];
+const VALID_PARAM_TYPES = ["integer", "string", "boolean"];
+const VALID_QUERY_TYPES = ["integer", "string", "boolean", "select"];
+const VALID_MULTIPART_TYPES = ["string", "file", "boolean"];
 const VALID_TYPE_PRIMITIVES = [
   "string",
   "string?",
